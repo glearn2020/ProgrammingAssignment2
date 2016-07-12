@@ -1,11 +1,39 @@
-## This file contains two functions to find inverse of matrix
-## function makeCacheMatrix returns a list with original matrix and its inverse (stored in cache)
-## function cacheSolve returns the inverse of a matrix, if the inverse is already computed and available in cache (makeCacheMatrix),
-## this function will not re compute, if the inverse is not available in cache or the supplied matrix is different, then inverse will be computed
+makeVector <- function(x = numeric()) {
+        m <- NULL
+        set <- function(y) {
+                x <<- y
+                m <<- NULL
+        }
+        get <- function() x
+        setmean <- function(mean) m <<- mean
+        getmean <- function() m
+        list(set = set, get = get,
+             setmean = setmean,
+             getmean = getmean)
+}
 
-## function to cache a matrix and its inverse
 
-makeCacheMatrix <- function(x = matrix()) {
+cachemean <- function(x, ...) {
+        m <- x$getmean()
+        if(!is.null(m)) {
+                message("getting cached data")
+                return(m)
+        }
+        data <- x$get()
+        m <- mean(data, ...)
+        x$setmean(m)
+        m
+}
+
+
+testMatrix <- function(mtrx = matrix()){
+getm <- function() mtrx
+list(getm = getm)
+}
+
+
+
+makeCacheMatrix <- function(newMatrix = matrix()){
 		inv <- NULL
 		setMatrix <- function(mat = matrix()){
 			newMatrix <<- mat
@@ -19,14 +47,7 @@ makeCacheMatrix <- function(x = matrix()) {
              getInverse = getInverse)		
 }
 
-
-## function to check if inverse exists in cache, if so return it, else compute inverse
-## this function takes two arguments, one a list out of makeCacheMatrix and second a matrix
-## if the matrix supplied is the same as the one supplied to makeCacheMatrix then will return inverse of 
-## matrix (from cache)
-
 cacheSolve <- function(x, newMatrix = matrix(), ...){
-		## Return a matrix that is the inverse of 'x'
 		invMatrix <- x$getInverse()
 		currMatrix <- x$getMatrix()
 		
@@ -68,3 +89,18 @@ cacheSolve <- function(x, newMatrix = matrix(), ...){
 		}
 
 }
+
+x <- makeCacheMatrix(matrix(1:4, nrow=2, ncol=2))
+newMatrix <- matrix(1:4, nrow=2, ncol=2)
+nullMatrix <- matrix()
+diffMatrix <- matrix(4:7, nrow=2, ncol=2)
+nullx <- makeCacheMatrix()
+
+
+
+cacheSolve(x)
+cacheSolve(x,newMatrix)
+cacheSolve(x,nullMatrix)
+cacheSolve(x,diffMatrix)
+cacheSolve(nullx)
+
